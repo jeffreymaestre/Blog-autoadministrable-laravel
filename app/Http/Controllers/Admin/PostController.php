@@ -8,7 +8,7 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
@@ -62,6 +62,8 @@ class PostController extends Controller
                 'url' => $url
             ]);
         }
+
+        Cache::flush();
 
         if ($request->tags) {
             $post->tags()->attach($request->tags);
@@ -118,6 +120,8 @@ class PostController extends Controller
             $post->tags()->sync($request->tags);
         }
 
+        Cache::flush();
+
         return redirect()->route('admin.posts.edit', $post)->with('info', 'El post se actualizó correctamente');
     }
 
@@ -132,6 +136,8 @@ class PostController extends Controller
         $this->authorize('author', $post);
 
         $post->delete();
+
+        Cache::flush();
 
         return redirect()->route('admin.posts.index')->with('info', 'El post se eliminó correctamente');
     }
